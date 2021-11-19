@@ -1,0 +1,179 @@
+---
+title: "Online Cryptography Course Analysis"
+author: "Angelo Sang"
+date: "11/19/2021"
+output: html_document
+---
+
+
+# ONLINE CRYPTOGRAPHY COURSE ANALYSIS
+ 
+## Business Understanding
+  Cryptography course was created by a Kenyan entrepreneur and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected dat on the process. Using R programming language we would help her identify which individuals are most likely to click on her ads.
+
+## Specifying the Data Analytic Question
+  Use R Prigramming to identify which individuals are the most likely to click on the ads.
+
+## Defining the Metric for Success
+We identify the most important features for identifying which individuals are most likely to click on the ads.
+
+## Recording the Experimental Design
+1) Finding and dealing with outliers, anomalies and missing data within the dataset.
+2) Performing univariate and Bivariate analysis
+
+## Data Relevance
+a) How accurate is the data at identifying which individuals are most likely to click on her ads?
+b) Was the dataset sufficient?
+c) Was the data biased?
+d) Is the data source a reliable source?
+
+```{r}
+# loading the dataset and library
+library(data.table)
+df <- fread('http://bit.ly/IPAdvertisingData')
+
+#previewing the dataset
+print(head(df))
+print(tail(df))
+```
+```{r}
+# checking data types 
+str(df)
+```
+
+## Cleaning the Dataset
+
+```{r}
+# checking for missing data
+#is.na(df)
+colSums(is.na(df))
+#the data doesn't have missing data
+```
+```{r}
+#checking the columns of the dataframe
+colnames(df)
+```
+
+```{r}
+# renaming the male column to gender
+df2 <-rename(df, Gender = Male)
+```
+
+```{r}
+# checking for duplicates 
+#duplicated(df)
+df[duplicated(df)]
+```
+
+
+```{r}
+
+library(tidyverse)
+# checking for outliers
+boxplot(df$Age)
+boxplot(df$`Area Income`)
+boxplot(df$`Daily Internet Usage`)
+
+# will not eliminate the outlies because the don't impact our analysis negatively
+```
+
+## UNIVARIATE ANALYSIS
+
+```{r}
+# Age column
+# visualizing the age distribution using histogram
+hist(df2$Age)
+
+# there is a higher tendency that a person aged between 30 and 35 years of age accessed her ads.
+```
+```{r}
+# visualizing the age distribution using bar graph
+# fetching the age column
+age <- df2$Age
+
+# applying the table() function the compute the frequency of the Age column
+age_frequency <- table(age)
+age_frequency
+```
+
+```{r}
+barplot(age_frequency)
+
+# most people accessing her ads where aged 31 years
+```
+```{r}
+# area_income
+# visualizing the area_income distribution using histogram
+hist(df2$`Area Income`)
+
+#people leaving within an area_income between 60,000 and 65,000 had access on her ads the most
+```
+```{r}
+# visualizing the daily_internet_usage distribution using histogram
+hist(df2$`Daily Internet Usage`)
+```
+```{r}
+# fetching the Gender column
+gender <- df2$Gender
+
+# applying the table() function to compute the frequency of the Gender column
+gender_frequency <- table(gender)
+gender_frequency
+
+# 1 represented the males and 0 represented the females
+```
+
+```{r}
+# visualizing the Gender distribution using bar graph
+barplot(gender_frequency)
+
+# most of the people who accessed her ads were females
+```
+```{r}
+# Visualizing the number of people ho clicked on the ads using bar graph
+# fetching the clicked on add column
+clicked_on_ad <- df2$`Clicked on Ad`
+
+#applying the table() function to compute the frequency of clicked on ad column
+clicked_on_ad_frequency <- table(clicked_on_ad)
+clicked_on_ad_frequency
+```
+ 
+```{r}
+barplot(clicked_on_ad_frequency)
+
+# half the number of people who had an access to her ads clicked on it.
+```
+
+## BIVARIATE ANALYSIS
+
+```{r}
+# Checking for covariance between area income and daily internet usage variables
+#assigning the area income column to area_income variable
+area_income <- df2$`Area Income`
+
+#assigning the daily internet usage column to daily_internet_usage
+daily_internet_usage <- df2$`Daily Internet Usage`
+
+cov(are_income, daily_internet_usage)
+
+#there is a positive linear relationship between the two variables
+```
+
+```{r}
+# Checking for correlation coefficient between area income and daily internet usage variables
+cor(area_income, daily_internet_usage)
+
+# this indicates that there is a weak linear relationship between the two variables because their correlation coefficient is close to zero
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
