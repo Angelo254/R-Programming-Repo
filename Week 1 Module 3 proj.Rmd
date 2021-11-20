@@ -1,0 +1,377 @@
+---
+title: "Week 1 Core Module 3 IP Project DS 11"
+author: "Angelo Sang"
+date: "11/19/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# ONLINE CRYPTOGRAPHY COURSE ANALYSIS
+ 
+## Business Understanding
+  Cryptography course was created by a Kenyan entrepreneur and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected dat on the process. Using R programming language we would help her identify which individuals are most likely to click on her ads.
+
+## Specifying the Data Analytic Question
+  Use R Prigramming to identify which individuals are the most likely to click on the ads.
+
+## Defining the Metric for Success
+We identify the most important features for identifying which individuals are most likely to click on the ads.
+
+## Recording the Experimental Design
+1) Finding and dealing with outliers, anomalies and missing data within the dataset.
+2) Performing univariate and Bivariate analysis
+
+## Data Relevance
+a) How accurate is the data at identifying which individuals are most likely to click on her ads?
+b) Was the dataset sufficient?
+c) Was the data biased?
+d) Is the data source a reliable source?
+
+```{r}
+# loading the dataset and library
+library(data.table)
+df <- fread('http://bit.ly/IPAdvertisingData')
+
+#previewing the dataset
+print(head(df))
+print(tail(df))
+```
+```{r}
+# checking data types 
+str(df)
+```
+
+## Cleaning the Dataset
+
+```{r}
+#Changing the timestamp datatype from factor to date_time
+df$Timestamp <- as.Date(df$Timestamp, format = "%Y-%m-%s-%h-%m-%s")
+
+# checking the new datatype for timestamp column
+sapply(df, class)
+```
+
+```{r}
+# checking for missing data
+#is.na(df)
+colSums(is.na(df))
+#the data doesn't have missing data
+```
+```{r}
+#checking the columns of the dataframe
+colnames(df)
+```
+
+```{r}
+#Checking shape of dataset
+dim(df)
+
+# the dataset has 1000 rows and 10 columns
+```
+
+```{r}
+# checking for duplicates 
+#duplicated(df)
+df[duplicated(df)]
+```
+
+
+```{r}
+
+library(tidyverse)
+# checking for outliers
+boxplot(df$Age)
+boxplot(df$`Area Income`)
+boxplot(df$`Daily Internet Usage`)
+
+# will not eliminate the outlies because the don't impact our analysis negatively
+```
+
+## UNIVARIATE ANALYSIS
+### Age
+
+```{r}
+#measures of central tendancy
+mean(df$Age)
+median(df$Age)
+
+#mode
+age_x <- df$Age
+#sort(age_x)
+names(table(age_x))[table(age_x)==max(table(age_x))]
+```
+
+```{r}
+# visualizing the age distribution using histogram
+hist(df$Age, col = c('yellow'))
+
+# there is a higher tendency that a person aged between 30 and 35 years of age accessed her ads.
+```
+- The age distribution is right skewed
+- The respondents on the website are mostly 25-40 years old
+- The mean age is 36
+- The median age is 35
+
+```{r}
+# visualizing the age distribution using bar graph
+# fetching the age column
+age <- df$Age
+
+# applying the table() function the compute the frequency of the Age column
+age_frequency <- table(age)
+age_frequency
+```
+
+```{r}
+barplot(age_frequency, col = 'yellow')
+
+# most people accessing her ads where aged 31 years
+```
+
+# Area_income
+
+```{r}
+#income
+#central tendancy
+mean(df$`Area Income`)
+median(df$`Area Income`)
+```
+
+```{r}
+# visualizing the area_income distribution using histogram
+hist(df$`Area Income`, col = 'blue')
+
+#people leaving within an area_income between 60,000 and 65,000 had access on her ads the most
+```
+- The income distribution is Left skewed
+- The respondents on the website mostly earn between 55,000 to 70,000
+- The mean income is 55,000
+- The median income is 57,012
+
+
+# Daily_Internet_Usage
+
+```{r}
+#this column represents the amount of data that the user consumes in a day
+# measures of central tendency
+mean(df$`Daily Internet Usage`)
+median(df$`Daily Internet Usage`)
+```
+
+```{r}
+# visualizing the daily_internet_usage distribution using histogram
+hist(df$`Daily Internet Usage`, col = 'red')
+```
+- The mean data usage is 180 units
+- The median data usage is 183.13 units
+
+# Ad_Topic_Line
+
+```{r}
+ad_topic_line <- df$`Ad Topic Line`
+
+levels(unique(ad_topic_line))
+#factor(unique(ad_topic_line))
+```
+- All the values are unique in this column thus we would drop it when modelling since it does not provide any additional meaningful information
+
+#City
+
+```{r}
+# City where the user is located
+# measure of central tendency
+length(levels(df$City))
+
+#mode (the modal cities in the dataset)
+city_x <- df$City
+
+#sort(city_x). This code gives an ordered list of all the elements in the cities column
+names(table(city_x))[table(city_x)==max(table(city_x))]
+
+```
+- The most popular cities in the dataset are: "Lisamouth"    "Williamsport"
+
+#Gender
+
+```{r}
+# gender of the user
+# fetching the Male column
+gender <- df$Male
+
+# applying the table() function to compute the frequency of the Male column
+gender_frequency <- table(gender)
+gender_frequency
+
+# 1 represented the males and 0 represented the females
+```
+
+```{r}
+# visualizing the Gender distribution using bar graph
+barplot(gender_frequency, col = 'green')
+
+# most of the people who accessed her ads were females
+```
+
+#Daily_Time_Spent_on_Site
+
+```{r}
+# This column represents the amount of time that the user spends on the website
+# measures of central of tendency
+mean(df$`Daily Time Spent on Site`)
+median(df$`Daily Time Spent on Site`)
+
+#mode
+x <- df$`Daily Time Spent on Site`
+
+#sort(x)
+names(table(x))[table(x)==max(table(x))]
+```
+
+```{r}
+# visualizing the daily time spent on site using histogram
+hist(df$`Daily Time Spent on Site`, col = 'pink')
+
+# majority of the people spent between 75 and 80 hrs on her site.
+```
+- The users spend an average of 65.002 minutes on the website
+- The modal time is "62.26" "75.55" "77.05" "78.76" "84.53"
+- The median time is 68.215
+- The distribution above is left-skewed
+
+
+# Country
+
+```{r}
+# Country where the user belongs
+# measures of central tendency
+country_x <- df$Country
+
+# levels(country_x) code gives the names of the countries
+length(levels(country_x))
+
+#the modal countries in the dataset
+names(table(country_x))[table(country_x)==max(table(country_x))]
+```
+- The most popular countries are:  "Czech Republic" "France" 
+
+
+# clicked on ads
+
+```{r}
+# Visualizing the number of people who clicked on the ads using bar graph
+# fetching the clicked on add column
+clicked_on_ad <- df$`Clicked on Ad`
+
+#applying the table() function to compute the frequency of clicked on ad column
+clicked_on_ad_frequency <- table(clicked_on_ad)
+clicked_on_ad_frequency
+```
+ 
+```{r}
+barplot(clicked_on_ad_frequency, col = 'orange')
+
+# half the number of people who had an access to her ads clicked on it.
+```
+
+## BIVARIATE ANALYSIS
+
+```{r}
+# Checking for covariance between area income and daily internet usage variables
+#assigning the area income column to area_income variable
+area_income <- df$`Area Income`
+
+#assigning the daily internet usage column to daily_internet_usage
+daily_internet_usage <- df$`Daily Internet Usage`
+
+cov(area_income, daily_internet_usage)
+
+```
+- There is a positive linear relationship between the two variables
+
+
+```{r}
+# Checking for correlation coefficient between area income and daily internet usage variables
+cor(area_income, daily_internet_usage)
+
+```
+-This indicates that there is a weak linear relationship between the two variables because their correlation coefficient is close to zero
+
+
+
+# Scatterplots of a few pairs of variables
+
+##Time spent on the site vs age of the user
+
+```{r}
+#libraries\
+library(ggplot2)
+
+#creating the data
+time_on_site <- df$`Daily Time Spent on Site`
+age <- df$Age
+data <- data.frame(time_on_site,age)
+
+#plot
+ggplot(data, aes(x=time_on_site, y=age)) + geom_point()
+```
+- Positive non-linear correlation
+
+## Age of the user vs Daily internet usage
+```{r}
+data1 <- data.frame(daily_internet_usage,age)
+
+#plot
+ggplot(data1, aes(x=daily_internet_usage,y=age)) + geom_point()
+```
+- The plot shows that there is positive non-linear correlation
+
+## Time spent on the site vs Area income
+```{r}
+data2 <- data.frame(area_income,time_on_site)
+
+#plot
+ggplot(data2, aes(x=area_income,y=time_on_site)) + geom_point()
+```
+- Positive non-linear correlation
+
+## Time spent on the site vs Daily internet usage
+```{r}
+data3 <- data.frame(time_on_site,daily_internet_usage)
+
+#plot
+ggplot(data3, aes(x=time_on_site, y=daily_internet_usage)) + geom_point()
+```
+
+
+# Gender Vs Clicked on ads
+
+```{r}
+library(tidyverse)
+
+# Male respondents who clicked on the ads
+dim(df %>% filter(Male == 1, `Clicked on Ad` == 1))
+
+# Male respondents who did not on the ads
+dim(df %>% filter(Male == 1, `Clicked on Ad` == 0))
+
+# Female respondents who clicked on the ads
+dim(df %>% filter(Male == 0, `Clicked on Ad` == 1))
+
+# Female respondents who did not click on the ads
+dim(df %>% filter(Male == 0, `Clicked on Ad` == 0))
+```
+
+
+```{r}
+clicked_vs_gender <- c(231, 250, 269, 250)
+
+# bargraph with added parameters
+barplot(clicked_vs_gender, main = 'clicked_vs_gender', xlab = 'label',ylab = 'count', names.arg = c('Male&Clicked Male&No-click Female&Clicked Female&No-click'), col = 'darkgreen', horiz = FALSE)
+```
+
+# CONCLUSION
+
+1. The time a user spends on the site does not influence the possibility of clicking on an ad.
+2. The gender of respondents who clicked on an ad and those who did not click on an add does not vary much. This means that the Gender of the respondent should be considered in equal measure.
+3. Most of the site users who are likely to click on an add earn between 55,000 to 70,000 per month. There are low income earners who click on ads but the majority earn the amount stated above.
